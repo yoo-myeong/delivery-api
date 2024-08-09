@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface MenuRepository : JpaRepository<Menu, String> {
+interface MenuRepository : JpaRepository<Menu, Long> {
     @Query(
         value = """
             SELECT m

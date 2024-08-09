@@ -1,4 +1,4 @@
-package com.kotlin.deliveryapi.domain.menu
+package com.kotlin.deliveryapi.domain.catalog.menu
 
 enum class MenuStatus(
     val description: String,

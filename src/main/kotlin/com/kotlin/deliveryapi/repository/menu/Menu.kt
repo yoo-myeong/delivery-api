@@ -1,6 +1,6 @@
 package com.kotlin.deliveryapi.repository.menu
 
-import com.kotlin.deliveryapi.domain.menu.MenuStatus
+import com.kotlin.deliveryapi.domain.catalog.menu.MenuStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
