@@ -14,3 +14,10 @@ spring:
   devtools:
     livereload:
       enabled: false
+
+server:
+  port: 8081
+  role-name: delivery-api
+
+payment:
+  pg-id: 123456789
