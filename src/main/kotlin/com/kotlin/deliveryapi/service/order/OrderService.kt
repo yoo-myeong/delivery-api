@@ -1,6 +1,7 @@
 package com.kotlin.deliveryapi.service.order
 
 import com.kotlin.deliveryapi.controller.order.dto.OrderRequest
+import com.kotlin.deliveryapi.domain.order.OrderDetail
 import com.kotlin.deliveryapi.domain.order.OrderUUIDGenerator
 import com.kotlin.deliveryapi.exception.DuplicateOrderException
 import com.kotlin.deliveryapi.exception.NotFoundException
@@ -10,6 +11,8 @@ import com.kotlin.deliveryapi.repository.checkoutItem.CheckoutItem
 import com.kotlin.deliveryapi.repository.checkoutItem.CheckoutItemRepository
 import com.kotlin.deliveryapi.repository.order.Order
 import com.kotlin.deliveryapi.repository.order.OrderRepository
+import com.kotlin.deliveryapi.repository.orderDiscount.OrderDiscountItem
+import com.kotlin.deliveryapi.repository.orderDiscount.OrderDiscountItemRepository
 import com.kotlin.deliveryapi.repository.orderItem.OrderItem
 import com.kotlin.deliveryapi.repository.orderItem.OrderItemRepository
 import com.kotlin.deliveryapi.service.CartItemService
@@ -30,6 +33,7 @@ class OrderService(
     private val discountService: DiscountService,
     private val cartService: CartService,
     private val cartItemService: CartItemService,
+    private val orderDiscountItemRepository: OrderDiscountItemRepository,
 ) {
     @Value("\${server.role-name}")
     lateinit var roleName: String
@@ -120,5 +124,25 @@ class OrderService(
         if (existsByCheckoutId) {
             throw DuplicateOrderException("이미 처리된 주문입니다. checkoutId: $checkoutId")
         }
+    }
+
+    fun detail(orderId: Long): OrderDetail {
+        val orderOptional = orderRepository.findById(orderId)
+        if (orderOptional.isEmpty) {
+            throw NotFoundException("요청한 주문서($orderId) 정보를 찾을 수 없습니다.")
+        }
+
+        val order = orderOptional.get()
+        val orderItemMenus = orderItemRepository.findAllByOrderId(orderId = orderId)
+        val orderDiscountItems = orderDiscountItemRepository.findAllByOrderId(orderId = orderId)
+        val orderDiscountItem: OrderDiscountItem? = if (orderDiscountItems.isNotEmpty()) orderDiscountItems.first() else null
+
+        return OrderDetail(
+            orderId = orderId,
+            customerId = order.customerId,
+            storeId = order.storeId,
+            orderItems = orderItemMenus,
+            orderDiscountItem = orderDiscountItem,
+        )
     }
 }
